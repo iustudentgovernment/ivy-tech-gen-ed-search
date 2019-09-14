@@ -29,7 +29,7 @@ fun getCourseEquivalency(courseName: CourseName, webDriver: RemoteWebDriver): IU
     Thread.sleep(2000)
 
     val selectCourse = Select(webDriver.findElementById("COURSE"))
-    val correspondingCourse = selectCourse.options.first { it.text.split(" ")[0] == courseName.number }
+    val correspondingCourse = selectCourse.options.firstOrNull { it.text.split(" ")[0] == courseName.number } ?: return null
     selectCourse.selectByVisibleText(correspondingCourse.text)
 
     Thread.sleep(3000)

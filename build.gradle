@@ -11,7 +11,17 @@ repositories {
 
 dependencies {
     compile 'org.seleniumhq.selenium:selenium-server:3.0.1'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "CourseCheckApplicationKt"
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 compileKotlin {
