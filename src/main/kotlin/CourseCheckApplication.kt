@@ -5,13 +5,13 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
-fun main() {
+fun main(args: Array<String>) {
     val executor = Executors.newCachedThreadPool()
 
     val ivyTechCourses = ConcurrentLinkedQueue<CourseName>()
-    ivyTechCourses.addAll(parseCatalog())
+    ivyTechCourses.addAll(parseCatalog(args[0]))
 
-    (1..2).forEach { executor.execute(ivyTechCourses) }
+    (1..3).forEach { executor.execute(ivyTechCourses) }
 }
 
 fun getGenEdFor(courseName: CourseName, webDriver: RemoteWebDriver): Pair<IUCourse, GenEd>? {

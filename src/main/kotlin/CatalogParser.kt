@@ -1,9 +1,7 @@
 import java.io.File
 
-const val catalogFileLocation = "/Users/adamratzman/iu/2019/fall/academics/ivytech/course-catalog.txt"
-
-fun parseCatalog(): List<CourseName> {
-    val catalogFile = File(catalogFileLocation)
+fun parseCatalog(path: String): List<CourseName> {
+    val catalogFile = File(path)
 
     return catalogFile.readLines()
         .filter {
