@@ -9,8 +9,14 @@ fun getCourseEquivalency(courseName: CourseName, webDriver: RemoteWebDriver): IU
         println("Getting course equivalency for $courseName")
         webDriver.get("https://cts.admissions.indiana.edu/transferin.cfm")
 
+        Thread.sleep(1000)
+
         val selectState = Select(webDriver.findElementById("STATES"))
-        selectState.selectByValue("IN")
+        try {
+            selectState.selectByValue("IN")
+        } catch (e: Exception) {
+            return getCourseEquivalency(courseName, webDriver)
+        }
 
         while (Select(webDriver.findElementById("COLLEGE")).options.none { it.getAttribute("value") == "2000130738" }) {
             Thread.sleep(500)
@@ -19,12 +25,18 @@ fun getCourseEquivalency(courseName: CourseName, webDriver: RemoteWebDriver): IU
         val selectCollege = Select(webDriver.findElementById("COLLEGE"))
         selectCollege.selectByValue("2000130738")
 
-        while (Select(webDriver.findElementById("SUBJECT")).options.none { it.getAttribute("value") == courseName.department }) {
+        Thread.sleep(5000)
+
+        while (Select(webDriver.findElementById("SUBJECT")).options.isEmpty()) {
             Thread.sleep(500)
         }
 
         val selectDepartment = Select(webDriver.findElementById("SUBJECT"))
-        selectDepartment.selectByValue(courseName.department)
+        try {
+            selectDepartment.selectByValue(courseName.department)
+        } catch (e: Exception) {
+            return null
+        }
 
         Thread.sleep(2000)
 
@@ -33,9 +45,9 @@ fun getCourseEquivalency(courseName: CourseName, webDriver: RemoteWebDriver): IU
             selectCourse.options.firstOrNull { it.text.split(" ")[0] == courseName.number } ?: return null
         selectCourse.selectByVisibleText(correspondingCourse.text)
 
-        Thread.sleep(3000)
+        Thread.sleep(6000)
 
-        val form = webDriver.findElementsByTagName("form")[1]
+        val form = webDriver.findElementsByTagName("form").getOrNull(1) ?: return null
 
         val lis = form.findElements(By.tagName("ol")).map { it.findElement(By.tagName("li")) }
 
@@ -58,10 +70,11 @@ fun getCourseEquivalency(courseName: CourseName, webDriver: RemoteWebDriver): IU
             iuCourseDescription,
             iuCreditsReceived
         )
-    } catch (e: org.openqa.selenium.NoSuchElementException) {
-        return getCourseEquivalency(courseName, webDriver)
     } catch (e: StaleElementReferenceException) {
         return getCourseEquivalency(courseName, webDriver)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        return null
     }
 }
 
